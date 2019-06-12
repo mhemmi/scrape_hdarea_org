@@ -6,6 +6,9 @@ moviefolder = 'movie folder, where they moved to'               ###
 seriefolder = 'main folder of you series'                       ###
 videoregex = '\.mkv|\.iso' #you can add with | \.<new ending>   ###
 cancelregex = '\.mp3|\.wave' #you can add with |\.<new ending>  ###
+#cancelregex means: these files will be ingored                 ###
+#only videoregex files will be moved,                           ###
+#all other files (except from cancelregex will be deleted!!!)   ###
 ###################################################################
 def moveContent(path):
         files = os.listdir(path)
