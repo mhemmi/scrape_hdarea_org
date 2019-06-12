@@ -12,13 +12,13 @@ moviequality = re.escape('2160') #720 or more means hd, 1080 or more means full-
 seriequality = re.escape('1080')
 year = "2007"
 databasefile = '' #WHERE IS YOUR DATABASE or where to store the file? If there is no one the script will create one
-pyload = "/opt/pyload/pyLoadCli.py"
+pyload = "<your path to pyLoadCli.py>" #path to pyloadCLI
 #MAILING STUFF
 senderEmail = "<enter your mail address>" #from whom comes the mail?
 empfangsEmail = "<enter the contact address>" #who gets the mail?
 server = smtplib.SMTP('<server>', <port>) 
 password = '<your password>'
-pyload = "/opt/pyload/pyLoadCli.py"
+
 
 ### GET DATABASE ###
 if(os.path.isfile(databasefile)):
