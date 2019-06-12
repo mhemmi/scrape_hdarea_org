@@ -12,13 +12,12 @@ moviequality = re.escape('2160') #720 or more means hd, 1080 or more means full-
 seriequality = re.escape('1080')
 year = "2007"
 databasefile = '' #WHERE IS YOUR DATABASE or where to store the file? If there is no one the script will create one
+pyload = "/opt/pyload/pyLoadCli.py"
 #MAILING STUFF
 senderEmail = "<enter your mail address>" #from whom comes the mail?
 empfangsEmail = "<enter the contact address>" #who gets the mail?
 server = smtplib.SMTP('<server>', <port>) 
 password = '<your password>'
-
-
 
 ### GET DATABASE ###
 if(os.path.isfile(databasefile)):
@@ -42,6 +41,8 @@ def addMovie(tit,lnk):
         #write new database
         with open(databasefile, 'w') as outfile:
                 json.dump(database, outfile)
+        #add movie
+        subprocess.call(["python",pyload,"add",tit,lnk]) #add movie to pyload
         sendMail(tit,lnk) #send notification
 
 def sendMail(tit,lnk):
@@ -64,57 +65,59 @@ data = requests.get(quote_page)
 soup = BeautifulSoup(page, 'html.parser')
 #content with links to movies and so
 el = soup.findAll(class_='beschreibung') #movie/serie content
-el2 = soup.findAll(class_='boxrechts') #all imdb ratings
 #new soup for shortned page
 soup = BeautifulSoup(str(el), 'html.parser')
 #get movie/series rating
 imdbs = re.findall(r'<div class="boxrechts">.*\n(.*)<',data.text) #find all imdb-ratings (requests version)
+langs = re.findall(r'.*?Sprache:</strong>\n(.*?)<',data.text) #get languages
 #get titles
 titles = soup.findAll('input')
+main = soup.findAll('main')
 ind = 0 #index for imdbs
 for title in titles:
         t = title.get('value') #title of our movie/serie
-#       print t
+        print t
         #check for language
         if (re.search(language,langs[ind].encode('utf-8')) == None): #language does not match
-#               print "missed language"
+                print "abbruch language"
                 continue
         #get quality (720p,1080p...)
         if(re.search('\.\d{3}p|\.\d{4}p|\.\d{3}P|\.\d{4}P',t) != None): #get the quality of the serie
                 qual = str(re.search('\.\d{3}p|\.\d{4}p|\.\d{3}P|\.\d{4}P',t).group(0)).replace('.','').replace('p','').replace('P','') #quality
         else:
-#               print "missed quality"
+                print "abbruch quality"
                 continue #skip this movie/serie because quality does not match
         #get and check for imdb rating
         if(re.search(r'>*\d[,|.]\d',str(imdbs[ind])) != None):
                 imdb = str(re.search(r'>*\d[,|.]\d',str(imdbs[ind])).group(0)).replace(',','.') #getting imdb rating for this movie
         else:
-#               print "missed imdb"
+                print "Abbruch imdb"
                 continue #if rating does not match skip this movie/serie
-        links = re.findall(r'</span><span style=\"display:inline;\"><a href=\"(.*?)target=',str(el[ind])) #all links of this movie/series
+        links = re.findall(r'</span><span style=\"display:inline;\"><a href=\"(.*?)".target=',str(el[ind])) #all links of this movie/series
         #searching for movies! not for series: 1. check if title has date (.2019.) 2. check for language 3. check for quality (.1080. | .720p. 4. .Sxx. is not in name
         if (re.search('.*?\.\d\d\d\d\.',t) != None and re.search('\.\d{3}p|\.\d{4}p',t) != None and re.search('.*?\.S\d\d\.',t) == None):
-                shorttitle = re.search('.*?\.\d\d\d\d\.',t.group(0))[:-1] #movie title (remove last character (.)
- #              print "Filme: "+shorttitle
+                shorttitle = str(re.search('.*?\.\d\d\d\d\.',t).group(0))[:-1] #movie title (remove last character (.)
+                print "Filme: "+shorttitle
                 mediayear = str(re.search('\.\d\d\d\d\.',t).group(0)).replace('.','') #year of movie
- #              print (shorttitle, mediayear, imdb)
+                print (shorttitle, mediayear, imdb)
                 if(int(mediayear) >= int(year) and int(qual) >= int(moviequality) and float(imdb) >= float(movierating)): #if year/quality/imdb rating matches our requirements
                         #print (shorttitle, mediayear) #gives us shorttitle and year of the movie
                         for link in links:
                                 if (link.find('filecrypt.cc/Container') != -1): #get the correct link
                                         dllink = str(link)
- #                                      print dllink
+                                        print dllink
                                         break
                         addMovie(shorttitle,dllink)
         #searching for series
         if(re.search('(.*?S...)COMPLETE',t) != None): #handle series
                 shorttitle = str(re.search('(.*?S...)COMPLETE',t).group(0))[:-9] #title of the serie
-  #             print "Serie: " + shorttitle + str(imdb) + str(serierating)
+                print "Serie: " + shorttitle + str(imdb) + str(serierating)
                 if(float(imdb) >= float(serierating) and int(qual) >= int(seriequality)): #check if serie matches our requirements
                         for link in links:
                                 if (link.find('filecrypt.cc/Container') != -1): #get the correct link
                                         dllink = str(link)
-  #                                     print dllink
+                                        print dllink
                                         break
                         addSerie(storttitle,dllink)
         ind = ind + 1
+
