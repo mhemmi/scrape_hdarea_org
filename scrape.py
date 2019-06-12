@@ -18,6 +18,7 @@ senderEmail = "<enter your mail address>" #from whom comes the mail?
 empfangsEmail = "<enter the contact address>" #who gets the mail?
 server = smtplib.SMTP('<server>', <port>) 
 password = '<your password>'
+pyload = "/opt/pyload/pyLoadCli.py"
 
 ### GET DATABASE ###
 if(os.path.isfile(databasefile)):
