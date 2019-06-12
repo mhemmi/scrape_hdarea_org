@@ -11,6 +11,7 @@ serierating = 7.9
 moviequality = re.escape('2160') #720 or more means hd, 1080 or more means full-hd, 2160 or more means uhd
 seriequality = re.escape('1080')
 year = "2007"
+language = 'Deutsch' #language of this stuff: Englisch, etc. is also possible
 databasefile = '' #WHERE IS YOUR DATABASE or where to store the file? If there is no one the script will create one
 pyload = "<your path to pyLoadCli.py>" #path to pyloadCLI
 #MAILING STUFF
