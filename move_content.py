@@ -10,6 +10,7 @@ cancelregex = '\.mp3|\.wave' #you can add with |\.<new ending>  ###
 #only videoregex files will be moved,                           ###
 #all other files (except from cancelregex will be deleted!!!)   ###
 ###################################################################
+
 def moveContent(path):
         files = os.listdir(path)
         for file in files:
@@ -19,7 +20,6 @@ def moveContent(path):
                 else:
                         print "Pfad " + path
                         video = re.search(videoregex,str(file)) #searching for mkv and iso files
-                        print video
                         cancel = re.search(cancelregex,str(file)) #searching for audio content
                         if(cancel != None):
                                 print "Canceled at: "+file
@@ -43,14 +43,15 @@ def moveContent(path):
                                         shutil.move(oldpath,newpath) #move file to new location
                                 serie = re.search('.*/(.*?\.S\d\d)',str(path)) #check if its a serie (and not movie)
                                 if serie != None: #true = found serie
-                                        print "Serie gefunden:"
-                                        oldpath = os.path.join(path,file) #remember path of file
-                                        newfolder = os.path.join(seriefolder,serie.group(1)) #create new folder path
-                                        newpath = os.path.join(seriefolder,serie.group(1),file) #create new file path
+                                        seriename = str(serie.group(1))[:-4] #name of the serie (without last numbers for season) [e.g. "Testserie"]
+                                        oldpath = os.path.join(path,file) #remember old path of file [e.g. /old/path/Serie]
+                                        serienamefolder = os.path.join(seriefolder,seriename) #folder of the home serie [e.g. new/folder/Testserie]
+                                        if not os.path.isdir(serienamefolder): #check if this serie has no home folder
+                                                os.mkdir(serienamefolder) #create new home folder for this serie
+                                        newfolder = os.path.join(serienamefolder,serie.group(1)) #create new folder path for season [e.g. /new/path/Testserie/Testserie.S02]
+                                        newpath = os.path.join(serienamefolder,serie.group(1),file) #create new file path [e.g. /new/path/Testserie/Testserie.S02/file.mkv]
                                         if not os.path.isdir(newfolder): #check if new folder already exists
-                                                print "New Folder: " + newfolder
                                                 os.mkdir(newfolder) # create new folder if not exists
-                                        print "Verschiebe: " + oldpath + " nach " + newpath #move file to new location
                                         shutil.move(oldpath,newpath) #move file to new location
                 #check if folder is empty to delete
                 removeEmptyFolders(path)
