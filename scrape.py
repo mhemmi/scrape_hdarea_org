@@ -7,8 +7,10 @@ from email.MIMEText import MIMEText
 
 ############ CONFIG ########################
 movierating = 7.3 #or 7.0 or 8.9 ...
+movieratinguhd = 7.9
 serierating = 7.9
-moviequality = re.escape('2160') #720 or more means hd, 1080 or more means full-hd, 2160 or more means uhd
+moviequality = re.escape('1080') #720 or more means hd, 1080 or more means full-hd, 2160 or more means uhd
+moviequalityuhd = re.escape('2160')
 seriequality = re.escape('1080')
 year = "2007"
 language = 'Deutsch' #language of this stuff: Englisch, etc. is also possible
@@ -96,13 +98,16 @@ for title in titles:
                 print "Abbruch imdb"
                 continue #if rating does not match skip this movie/serie
         links = re.findall(r'</span><span style=\"display:inline;\"><a href=\"(.*?)".target=',str(el[ind])) #all links of this movie/series
-        #searching for movies! not for series: 1. check if title has date (.2019.) 2. check for language 3. check for quality (.1080. | .720p. 4. .Sxx. is not in name
+        #searching for movies! not for series: 1. check if title has date (.2019.) 2. check for language 3. check for quality (.1080p. | .720p. 4. .Sxx. is not in name
         if (re.search('.*?\.\d\d\d\d\.',t) != None and re.search('\.\d{3}p|\.\d{4}p',t) != None and re.search('.*?\.S\d\d\.',t) == None):
                 shorttitle = str(re.search('.*?\.\d\d\d\d\.',t).group(0))[:-1] #movie title (remove last character (.)
                 print "Filme: "+shorttitle
                 mediayear = str(re.search('\.\d\d\d\d\.',t).group(0)).replace('.','') #year of movie
                 print (shorttitle, mediayear, imdb)
-                if(int(mediayear) >= int(year) and int(qual) >= int(moviequality) and float(imdb) >= float(movierating)): #if year/quality/imdb rating matches our requirements
+                cond1 = int(mediayear) >= int(year)
+                cond2 = int(qual) >= int(moviequality) and float(imdb) >= float(movierating)
+                cond3 = int(qual) >= int(moviequalityuhd) and float(imdb) >= float(movieratinguhd)
+                if(cond1 and cond2 or cond1 and cond3): #if year/quality/imdb rating matches our requirements
                         #print (shorttitle, mediayear) #gives us shorttitle and year of the movie
                         for link in links:
                                 if (link.find('filecrypt.cc/Container') != -1): #get the correct link
