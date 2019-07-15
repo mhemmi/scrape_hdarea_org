@@ -21,9 +21,11 @@ Installation:
 User manual:
 1. edit scrape.py config - (above is an example):<br/>
   movierating = 7.1<br/>
+  movieratinguhd = 7.9 <br/>
   serierating = 7.4<br/>
   moviequality = re.escape('1080') #720 or more means hd, 1080 or more means full-hd, 2160 or more means uhd<br/>
   seriequality = re.escape('720')<br/>
+  moviequalityuhd = re.escape('2160')
   year = "2018"<br/>
   databasefile = '/home/database.json' #WHERE IS YOUR DATABASE or where to store the file? If there is no one the script will create one<br/>
   pyload = "/opt/pyload/pyLoadCli.py>" #path to pyloadCLI<br/>
