@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 
-############ CONFIG ########################
+############ CONFIG BEGIN ########################
 movierating = 7.3 #or 7.0 or 8.9 ...
 movieratinguhd = 7.9
 serierating = 7.9
@@ -21,7 +21,7 @@ senderEmail = "<enter your mail address>" #from whom comes the mail?
 empfangsEmail = "<enter the contact address>" #who gets the mail?
 server = smtplib.SMTP('<server>', <port>) 
 password = '<your password>'
-
+############ CONFIG END ########################
 
 ### GET DATABASE ###
 if(os.path.isfile(databasefile)):
@@ -31,17 +31,17 @@ else:
         database = {}
         database['movie'] = []
 
-
 #functions
-def addSeries(tit,lnk):
-        addMovie(tit,lnk) #maybe later there are changes
+def addSeries(tit,lnk,qual):
+        addMovie(tit,lnk,qual) #maybe later there are changes
 
-def addMovie(tit,lnk):
+def addMovie(tit,lnk,qual):
         #search if movie was already added
         for movie in database['movie']:
-                if(movie['title'] == tit):
+                if(movie['title'] == tit+"."+qual):
                         return #movie already added
-        database['movie'].append({'title':shorttitle}) #if not found add this movie to database
+        database['movie'].append({'title':tit+"."+qual}) #if not found add this movie to database
+        print "Added new movie to database: " + tit+"."+qual
         #write new database
         with open(databasefile, 'w') as outfile:
                 json.dump(database, outfile)
@@ -114,7 +114,7 @@ for title in titles:
                                         dllink = str(link)
                                         print dllink
                                         break
-                        addMovie(shorttitle,dllink)
+                        addMovie(shorttitle,dllink,qual)
         #searching for series
         if(re.search('(.*?S...)COMPLETE',t) != None): #handle series
                 shorttitle = str(re.search('(.*?S...)COMPLETE',t).group(0))[:-9] #title of the serie
@@ -125,6 +125,6 @@ for title in titles:
                                         dllink = str(link)
                                         print dllink
                                         break
-                        addSerie(storttitle,dllink)
+                        addSerie(storttitle,dllink,qual)
         ind = ind + 1
 
